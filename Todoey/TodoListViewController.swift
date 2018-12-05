@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-  let iteamArray = ["Go Out","Buy Food","Vist Friend"]
+  var iteamArray = ["Go Out","Buy Food","Vist Friend"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,7 +18,7 @@ class TodoListViewController: UITableViewController {
     }
    
     
-    //mark : table view datasource method
+    //MARK : table view datasource method
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return iteamArray.count
     }
@@ -30,10 +30,11 @@ class TodoListViewController: UITableViewController {
         return cell
     }
     
-    //mark : table view deleget method
+    //MARK : table view deleget method
     
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
        // print(iteamArray[indexPath.row])
+        
           tableView.deselectRow(at: indexPath, animated: true)
         
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
@@ -43,6 +44,28 @@ class TodoListViewController: UITableViewController {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
       
+    }
+    //MARK - add new iteam
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        let alart = UIAlertController.init(title: "Add new Todoey", message: "", preferredStyle: .alert)
+        let action = UIAlertAction.init(title: "Add Item", style: .default) { (action) in
+            // what will happened when add item is presssed
+            
+            self.iteamArray.append(textField.text!)
+            self.tableView.reloadData()
+    
+        }
+        alart.addTextField { (aleartTextField) in
+            aleartTextField.placeholder = "Create new item"
+            textField = aleartTextField
+            
+        }
+        
+        alart.addAction(action)
+        
+        present(alart, animated: true, completion: nil)
     }
 }
 
