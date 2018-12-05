@@ -11,10 +11,15 @@ import UIKit
 class TodoListViewController: UITableViewController {
 
   var iteamArray = ["Go Out","Buy Food","Vist Friend"]
+    let defaults = UserDefaults()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        if let items = defaults.array(forKey: "TodoList") as? [String] {
+            iteamArray = items
+        }
+        
     }
    
     
@@ -55,6 +60,7 @@ class TodoListViewController: UITableViewController {
             
             self.iteamArray.append(textField.text!)
             self.tableView.reloadData()
+            self.defaults.set(self.iteamArray, forKey: "TodoListArray")
     
         }
         alart.addTextField { (aleartTextField) in
