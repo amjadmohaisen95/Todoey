@@ -11,11 +11,14 @@ import UIKit
 class TodoListViewController: UITableViewController {
 
   var iteamArray = [Item]()
-    let defaults = UserDefaults()
+  let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+
+        
         
         let newIteam = Item()
         newIteam.title = "Go Out"
@@ -29,10 +32,10 @@ class TodoListViewController: UITableViewController {
         newIteam3.title = "Vist Friend"
         iteamArray.append(newIteam3)
         
-        
-        if let items = defaults.array(forKey: "TodoList") as? [Item] {
-            iteamArray = items
-        }
+        loadItem()
+//     if let items = defaults.array(forKey: "TodoList") as? [Item] {
+//        iteamArray = items
+//        }
         
     }
    
@@ -58,14 +61,13 @@ class TodoListViewController: UITableViewController {
     }
     
     //MARK : table view deleget method
-    
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-       // print(iteamArray[indexPath.row])
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // print(iteamArray[indexPath.row])
         iteamArray[indexPath.row].done = !iteamArray[indexPath.row].done
-
+        saveItems()
         
-        tableView.reloadData()
-           tableView.deselectRow(at: indexPath, animated: true)
+      
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     //MARK - add new iteam
     
@@ -78,8 +80,8 @@ class TodoListViewController: UITableViewController {
             let newItem = Item()
             newItem.title = textField.text!
             self.iteamArray.append(newItem)
-            self.tableView.reloadData()
-            self.defaults.set(self.iteamArray, forKey: "TodoListArray")
+          
+            self.saveItems()
     
         }
         alart.addTextField { (aleartTextField) in
@@ -92,5 +94,39 @@ class TodoListViewController: UITableViewController {
         
         present(alart, animated: true, completion: nil)
     }
+    
+    func saveItems() {
+        
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(iteamArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item \(error)")
+        }
+        
+        
+        self.tableView.reloadData()
+        
+    }
+    
+    
+    func loadItem() {
+        
+        if let data = try? Data(contentsOf: dataFilePath!) {
+        
+        let decoder = PropertyListDecoder()
+        
+        do {
+            iteamArray = try decoder.decode([Item].self,from: data)
+        } catch {
+            print("Error decoding item \(error)")
+        }
+        }
+        
+    }
+    
+    
+    
 }
 
